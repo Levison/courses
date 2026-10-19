@@ -1,0 +1,6 @@
+{
+  "mcpServers": {
+    "depintel": { "command": "uvx", "args": ["depintel-mcp"] },
+    "notes": { "url": "https://mcp.example.com/mcp" }
+  }
+}

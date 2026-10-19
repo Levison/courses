@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "depintel": { "command": "/absolute/path/to/uvx", "args": ["depintel-mcp"] }
+  }
+}

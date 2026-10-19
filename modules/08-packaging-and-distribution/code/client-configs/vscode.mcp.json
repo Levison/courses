@@ -1,0 +1,6 @@
+{
+  "servers": {
+    "depintel": { "type": "stdio", "command": "uvx", "args": ["depintel-mcp"] },
+    "notes": { "type": "http", "url": "https://mcp.example.com/mcp" }
+  }
+}
