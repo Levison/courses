@@ -314,7 +314,11 @@ def cmd_learner_branch(args) -> int:
     gi.write_text("".join(keep), encoding="utf-8")
     git("add", str(gi))
     if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode:
-        git("commit", "-q", "-m", f"{ROOT.name}: track workspace/ and PROGRESS.md on {branch}")
+        msg = f"{ROOT.name}: track workspace/ and PROGRESS.md on {branch}"
+        r = subprocess.run(["git", "commit", "-q", "-m", msg], cwd=ROOT, capture_output=True, text=True)
+        if r.returncode:
+            sys.exit(f"On {branch} with .gitignore updated and staged, but `git commit` failed:\n"
+                     f"{(r.stderr or r.stdout).strip()}\nFix that (often: set user.name/user.email) and re-run this command.")
     print(f"On {branch}: workspace/ and PROGRESS.md are now tracked here (still ignored on main).")
     return 0
 
