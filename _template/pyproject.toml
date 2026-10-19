@@ -1,0 +1,20 @@
+# ADAPT: Python course defaults. For another language keep a minimal pyproject (or
+# none) for the kit's own tests and add your toolchain files (package.json, go.mod, ...).
+[project]
+name = "course-COURSE-SLUG"          # ADAPT
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = []                    # ADAPT: pin the libraries the course teaches
+
+[dependency-groups]
+dev = ["pytest>=8.3"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib -q"
+# solutions/ hold the learner-facing solved copies (checked via `make solve`), workspace/ is the learner's.
+norecursedirs = [".*", "*.egg-info", "build", "dist", "node_modules", "venv", "solutions", "workspace"]
+pythonpath = ["."]                   # makes `course_kit` importable from exercise tests
+testpaths = ["modules"]
