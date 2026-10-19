@@ -6,8 +6,16 @@ from pathlib import Path
 
 import pytest
 
+
+def _course_root() -> Path:
+    # Works from modules/06-*/code/ and from a learner's workspace/06-*/ copy.
+    return next(p for p in Path(__file__).resolve().parents if (p / "course_kit").is_dir())
+
+
+# Module 03's reference server, unless a depintel_server.py sits next to this file
+# (copy one into your workspace to experiment without touching the course content).
+sys.path.insert(0, str(_course_root() / "modules" / "03-wrapping-a-real-api" / "code"))
 sys.path.insert(0, str(Path(__file__).parent))
-sys.path.insert(0, str(Path(__file__).parents[2] / "03-wrapping-a-real-api" / "code"))
 import catalog_lock  # noqa: E402
 from depintel_server import create_server  # noqa: E402
 

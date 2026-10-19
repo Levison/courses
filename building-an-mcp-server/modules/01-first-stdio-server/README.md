@@ -26,7 +26,8 @@
 ## Tutorial
 
 ```bash
-cd modules/01-first-stdio-server/code
+make start 01                          # copies code/ to workspace/01-first-stdio-server/ (your copy)
+cd workspace/01-first-stdio-server
 uv run python textkit_server.py         # sits silently waiting on stdin: correct. Ctrl-C.
 uv run python client.py                 # spawns it over stdio, lists tools, calls two
 uv run python wire_peek.py              # raw JSON-RPC: server/discover, tools/list, tools/call
@@ -51,13 +52,21 @@ uv run pytest -q                        # in-memory + real-stdio tests
 
 ## Exercises
 
-1. Add `count_tokens_estimate(text) -> int` with `annotations=ToolAnnotations(readOnlyHint=True)`, and a test.
-2. Make `slugify` return a pydantic model `{slug, length}`. Look at how `outputSchema` changes in `wire_peek.py`.
-3. Raise a plain `RuntimeError("db password is hunter2")` inside a tool. Confirm the client sees only
-   "Error executing tool …". Why is that the right default?
-4. Add `print("hi")` at import time and connect with `client.py`. What breaks, and why? (Then remove it.)
-5. In `wire_peek.py`, send `tools/list` with `protocolVersion: "2099-01-01"`. Which error code comes back?
-   (Hint: `UnsupportedProtocolVersion`, now `-32022`.)
+Work in your copy, `workspace/01-first-stdio-server/` (create it with `make start 01`); never edit `code/`.
+Discussion answers go in `workspace/01-first-stdio-server/NOTES.md` under the matching `## Exercise N` heading.
+Check your work with `make check 01`; `make progress` updates `PROGRESS.md`.
+Reference answers are in [`solutions/`](solutions/) (spoilers).
+
+1. Add a `count_tokens_estimate(text) -> int` tool (about 4 characters per token, minimum 1) with
+   `annotations=ToolAnnotations(readOnlyHint=True)` to `workspace/01-first-stdio-server/textkit_server.py`, and test it
+   in `workspace/01-first-stdio-server/test_textkit.py` (that whole file must pass, so update the catalog test too).
+2. Make `slugify` return a pydantic model `{slug, length}`. Run your `wire_peek.py` and look at how `outputSchema` changes.
+3. Add a `crash_test()` tool that raises a plain `RuntimeError("db password is hunter2")`. Confirm the client sees only
+   "Error executing tool …". Why is that the right default? (Answer in NOTES.md.)
+4. Add `print("hi")` at import time in your `textkit_server.py` and connect with `client.py`. What breaks, and why?
+   Answer in NOTES.md, then remove the print (the check verifies stdout is clean again).
+5. In your `wire_peek.py`, send `tools/list` with `protocolVersion: "2099-01-01"`. Which error code comes back?
+   Record the code and the error `data` in NOTES.md. (Hint: `UnsupportedProtocolVersion`.)
 
 ## Further reading
 - [Spec: Overview](https://modelcontextprotocol.io/specification/2026-07-28) and [Tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)

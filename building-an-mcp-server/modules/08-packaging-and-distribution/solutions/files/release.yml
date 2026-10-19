@@ -1,0 +1,49 @@
+# Ex 4: release on tag. Copy to .github/workflows/release.yml at the repository root.
+# One-time setup: add a PyPI "trusted publisher" for this repo/workflow/environment, and make
+# sure server.json "name" is io.github.<owner>/<repo-or-name> so GitHub OIDC proves ownership.
+name: release
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  pypi:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write   # OIDC for PyPI trusted publishing (no API token stored)
+      contents: read
+    defaults:
+      run:
+        working-directory: depintel-mcp
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+      - name: Check tag matches package and server.json versions
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          grep -q "^version = \"$v\"" pyproject.toml
+          python3 -c "import json,sys; d=json.load(open('server.json')); assert d['version']==d['packages'][0]['version']=='$v'"
+      - run: uv build
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: depintel-mcp/dist
+
+  registry:
+    needs: pypi   # the registry verifies the PyPI package (mcp-name in its README) exists
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # OIDC for `mcp-publisher login github-oidc`
+      contents: read
+    defaults:
+      run:
+        working-directory: depintel-mcp
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          sudo mv mcp-publisher /usr/local/bin/
+      - run: mcp-publisher validate
+      - run: mcp-publisher login github-oidc
+      - run: mcp-publisher publish

@@ -37,9 +37,42 @@ See [docs/whats-changed.md](docs/whats-changed.md) for how to read older tutoria
 - Comfortable with async Python, pytest, HTTP and OAuth basics (bearer tokens, audiences, scopes).
 
 ```bash
-uv sync                      # installs mcp[cli]==2.3.0, httpx, pyjwt, pytest
-uv run pytest                # runs every module's tests (~50 tests, about 10 s, offline except module 8's uvx build)
+uv sync                      # installs mcp[cli]==2.3.0, httpx, pyjwt, pytest, hypothesis
+make test                    # reference tests for every module (58 + 1 opt-in live test, ~10 s, offline except module 08's uvx build)
 ```
+
+`make` is GNU Make; every target is a thin wrapper around `uv run python course_kit/kit.py …` if you prefer not to use it.
+
+## How to take this course
+
+The course content under `modules/` is **read-only**: lessons, reference code, exercise checks and solutions. Your work
+lives in `workspace/`, which is ignored on `main`, so finishing the course never leaves a mess in the content and course
+updates merge cleanly.
+
+```bash
+make learner-branch NAME=chris   # once: creates learner/chris, where workspace/ and PROGRESS.md are tracked
+make start 01                    # copies modules/01-*/code/ to workspace/01-first-stdio-server/ + a NOTES.md
+#   ...do the module's tutorial and exercises in workspace/01-first-stdio-server/...
+make check 01                    # runs module 01's exercise checks against your copy
+make progress                    # writes PROGRESS.md: a checklist of every exercise in every module
+git add -A && git commit -m "module 01"
+git merge main                   # later: pull in course updates; main never touches workspace/ or PROGRESS.md
+```
+
+| Command | What it does |
+|---|---|
+| `make start NN` | Copies `modules/NN-*/code/` to `workspace/NN-*/` (skipping caches, `node_modules`, `dist`, keys) and creates `NOTES.md` with a section per exercise. Never overwrites existing work (`FORCE=1` recopies code). `make start typescript` for the appendix. |
+| `make check NN` | Runs `modules/NN-*/exercises/test_exN_*.py` against your workspace copy and prints ✔/✘ per exercise. Exit status 0 only when all pass. |
+| `make progress` | Runs every exercise check and writes `PROGRESS.md`. Unstarted modules show as "not started". |
+| `make test` | Runs the reference tests in `modules/*/code` and `appendix-typescript/code`; they must stay green. |
+| `make solve NN FORCE=1` | Spoiler: copies `solutions/files/` over your copy and `solutions/NOTES.md` over your notes (the old notes are kept as `NOTES.before-solve.md`). |
+| `make list` | Lists modules, exercise counts and which ones you have started. |
+
+Exercise checks skip when the module has not been started. Coding exercises are tested against your copy (often by importing
+your server and calling it in-memory or over real stdio/HTTP). Discussion exercises check that the matching
+`## Exercise N` section of your `NOTES.md` has a substantive answer touching the key idea; they cannot judge
+whether it is right, so compare with `solutions/NOTES.md`. Exercises that need things the checks cannot see (a real IdP,
+a real host, TestPyPI, an LLM API key, Docker) are graded on what you record in `NOTES.md`, which is self-attested.
 
 ## Module map
 
@@ -113,17 +146,25 @@ By the end you can:
 
 ## How the code was verified
 
-Everything in `modules/*/code` and `appendix-typescript` was run on 2026-10-19 (see each module's "Verified" note):
-`uv run pytest` gives 58 passed, 1 skipped (a live-network test you can enable with `LIVE=1`). Module 06's
+Everything in `modules/*/code` and `appendix-typescript/code` was run on 2026-10-19 (see each module's "Verified" note):
+`make test` gives 58 passed, 1 skipped (a live-network test you can enable with `LIVE=1`). Module 06's
 `inspector_smoke.sh` passes against modules 01–04, and `inspector --strict` passes on every server.
 
-## Repo layout
+The exercise checks were verified the same day for all 42 exercises: they skip with no workspace, fail on a fresh
+`make start` copy, and pass after `make solve` applies the reference solutions.
+
+## Layout
 
 ```
 README.md                    this file
+Makefile                     start / check / progress / test / solve / list / learner-branch
+course_kit/                  kit.py (workspace + progress), exercise.py (test helpers), NOTES.template.md
 docs/whats-changed.md        reading 2025-era tutorials against 2026-07-28
 modules/NN-*/README.md       concepts, tutorial, exercises, further reading
-modules/NN-*/code/           runnable servers, clients, tests
-appendix-typescript/         TS SDK v2 version of module 01, plus interop tests
+modules/NN-*/code/           reference servers, clients, tests (read-only; `make test`)
+modules/NN-*/exercises/      one check per exercise: test_exN_*.py (`make check NN`)
+modules/NN-*/solutions/      NOTES.md (answer per exercise) + files/ (solved workspace)
+appendix-typescript/         same layout for the TS SDK v2 version of module 01
 pyproject.toml, conftest.py  one uv project for all modules
+workspace/, PROGRESS.md      yours; ignored on main, tracked on your learner branch
 ```

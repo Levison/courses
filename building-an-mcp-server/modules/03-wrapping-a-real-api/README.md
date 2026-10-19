@@ -27,7 +27,8 @@ vulnerability DB). Both are public and need no keys, so you can run it for real.
 ## Tutorial
 
 ```bash
-cd modules/03-wrapping-a-real-api/code
+make start 03                          # copies code/ to workspace/03-wrapping-a-real-api/ (your copy)
+cd workspace/03-wrapping-a-real-api
 uv run pytest -q                       # offline (MockTransport)
 LIVE=1 uv run pytest -q -k live        # hits real OSV
 uv run python demo_live.py             # real PyPI + OSV over stdio, with progress
@@ -51,11 +52,21 @@ Things to notice in the code:
 
 ## Exercises
 
-1. Add `latest_safe_version(name, current)` that combines PyPI releases with OSV `fixed_in` to suggest an upgrade target.
-2. Add an in-memory TTL cache (60 s) in the lifespan state for PyPI lookups. Write a test proving the second call makes no HTTP request.
-3. Add a `pypi://{name}/{version}/metadata` resource. When is a resource better than `package_info`?
-4. OSV supports `/v1/querybatch`. Rewrite `audit_requirements` to use it and compare latency.
-5. Make one tool return an `isError` result with a *retry hint* and observe in Claude Code or Cursor whether the model retries.
+Work in your copy, `workspace/03-wrapping-a-real-api/` (create it with `make start 03`); never edit `code/`.
+Discussion answers go in `workspace/03-wrapping-a-real-api/NOTES.md` under the matching `## Exercise N` heading.
+Check your work with `make check 03`; `make progress` updates `PROGRESS.md`.
+Reference answers are in [`solutions/`](solutions/) (spoilers).
+
+1. In your `depintel_server.py`, add a `latest_safe_version(name, current)` tool that combines PyPI releases with OSV
+   `fixed_in` to suggest an upgrade target. Return a model with a `suggested` field: the lowest release >= `current` with
+   no known vulnerabilities (`current` itself if it is clean).
+2. Add an in-memory TTL cache (60 s) in the lifespan state for PyPI lookups. Write a test in your `test_depintel.py`
+   proving the second call makes no HTTP request (the whole file must pass).
+3. Add a `pypi://{name}/{version}/metadata` resource. When is a resource better than `package_info`? (NOTES.md)
+4. OSV supports `/v1/querybatch`. Rewrite `audit_requirements` to send one batch request instead of one query per line,
+   and compare latency against the live API.
+5. Make retryable upstream failures (429/503, honoring `Retry-After`) return an `isError` result with a *retry hint*, then
+   observe in Claude Code or Cursor whether the model retries. Record what happened in NOTES.md.
 
 ## Further reading
 - SDK: [Lifespan](https://py.sdk.modelcontextprotocol.io/handlers/lifespan/), [Structured output](https://py.sdk.modelcontextprotocol.io/servers/structured-output/), [Progress](https://py.sdk.modelcontextprotocol.io/handlers/progress/)

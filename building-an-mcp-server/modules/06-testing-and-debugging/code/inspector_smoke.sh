@@ -2,7 +2,8 @@
 # Black-box smoke test with the official MCP Inspector CLI (v2, needs Node >= 22.19).
 # Exit codes are stable: 0 ok, 3 auth, 4 unreachable, 5 tool error, 6 --strict schema problem.
 set -euo pipefail
-cd "$(dirname "$0")/../../.."
+# cd to the course root (works from modules/06-*/code/ and from workspace/06-*/)
+cd "$(dirname "$0")"; while [[ ! -d course_kit && $PWD != / ]]; do cd ..; done
 PY=${PY:-.venv/bin/python}
 INSPECT=(npx -y @modelcontextprotocol/inspector@2.11.0 --cli)
 

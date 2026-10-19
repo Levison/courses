@@ -1,0 +1,36 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.your-github-user/depintel-mcp",
+  "title": "Dependency Intel",
+  "description": "PyPI package metadata and OSV vulnerability lookups for Python dependencies.",
+  "repository": {
+    "url": "https://github.com/your-github-user/depintel-mcp",
+    "source": "github"
+  },
+  "version": "0.8.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "depintel-mcp",
+      "version": "0.8.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://depintel.example.com/mcp",
+      "headers": [
+        {
+          "name": "X-API-Key",
+          "description": "API key for the hosted depintel service",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

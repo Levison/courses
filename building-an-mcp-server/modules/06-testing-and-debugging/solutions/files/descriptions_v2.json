@@ -1,0 +1,5 @@
+{
+  "package_info": "Look up a Python package on PyPI: latest version, release count, license, summary, homepage, and which Python versions it supports.",
+  "check_vulnerabilities": "Is one exact version of a Python package vulnerable? Lists known security issues (CVE/GHSA from OSV.dev) for a single package==version, with the fixed versions to upgrade to.",
+  "audit_requirements": "Audit a whole requirements.txt or lockfile: checks every pinned dependency (name==version per line, max 50) for known vulnerabilities in one go."
+}

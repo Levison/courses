@@ -25,7 +25,8 @@
 ## Tutorial
 
 ```bash
-cd modules/02-resources-and-prompts/code
+make start 02                          # copies code/ to workspace/02-resources-and-prompts/ (your copy)
+cd workspace/02-resources-and-prompts
 uv run pytest -q
 uv run mcp dev runbook_server.py      # Resources tab: runbook://index, templates; Prompts tab: postmortem
 npx @modelcontextprotocol/inspector --cli uv run python runbook_server.py --method resources/read --uri runbook://db-failover
@@ -42,12 +43,19 @@ Walk through the code in this order:
 
 ## Exercises
 
-1. Add `runbook://{slug}/history` returning JSON of notes with timestamps. Should it be `public` or `private` cache scope? Why?
-2. Add a `{+path}` template that serves files from a directory, then try `..%2F..%2Fetc%2Fpasswd`. Who stops it? (Module 07 adds a second layer.)
-3. Add a prompt `handoff(slug)` that embeds *two* resources (runbook + checklist).
-4. Make `add_note` also call `ctx.notify_resources_changed()` when a *new* runbook is created, and write a test using
-   `client.listen(resources_list_changed=True)`.
-5. Design question: you want the model to be able to search runbooks. Tool, resource or both? Defend the choice.
+Work in your copy, `workspace/02-resources-and-prompts/` (create it with `make start 02`); never edit `code/`.
+Discussion answers go in `workspace/02-resources-and-prompts/NOTES.md` under the matching `## Exercise N` heading.
+Check your work with `make check 02`; `make progress` updates `PROGRESS.md`.
+Reference answers are in [`solutions/`](solutions/) (spoilers).
+
+1. In your `runbook_server.py`, add `runbook://{slug}/history` returning a JSON list of `{"note", "at"}` entries (ISO-8601
+   timestamp) for notes added with `add_note`. Should it be `public` or `private` cache scope? Why? (NOTES.md)
+2. Add a `files://{+path}` template that serves files from a `files/` directory next to your server, and create
+   `files/hello.md`. Then try `files://..%2F..%2Fetc%2Fpasswd` and friends. Who stops it? (NOTES.md; module 07 adds a second layer.)
+3. Add a prompt `handoff(slug)` that embeds *two* resources: `runbook://{slug}` and its checklist.
+4. Add a `create_runbook(slug, title, body)` tool that calls `ctx.notify_resources_changed()`, and write a test in your
+   `test_runbooks.py` using `client.listen(resources_list_changed=True)` (the whole file must pass).
+5. Design question: you want the model to be able to search runbooks. Tool, resource or both? Defend the choice in NOTES.md.
 
 ## Further reading
 - Spec: [Resources](https://modelcontextprotocol.io/specification/2026-07-28/server/resources), [Prompts](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts)

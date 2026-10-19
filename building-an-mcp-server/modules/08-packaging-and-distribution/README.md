@@ -29,7 +29,8 @@ for the **MCP Registry**, know when to ship an **MCPB** bundle or a **remote URL
 ## Tutorial
 
 ```bash
-cd modules/08-packaging-and-distribution/code/depintel-mcp
+make start 08                          # copies code/ to workspace/08-packaging-and-distribution/ (your copy)
+cd workspace/08-packaging-and-distribution/depintel-mcp
 uv build                                        # dist/depintel_mcp-0.8.0-py3-none-any.whl + sdist
 uvx --from dist/depintel_mcp-0.8.0-py3-none-any.whl depintel-mcp      # stdio; Ctrl-C
 uvx --from dist/depintel_mcp-0.8.0-py3-none-any.whl depintel-mcp --http --port 8000
@@ -59,12 +60,21 @@ wrong `Host` gets `421 Invalid Host header` and an allowed one connects at `2026
 
 ## Exercises
 
-1. Publish to **TestPyPI** and run `uvx --index-url https://test.pypi.org/simple/ depintel-mcp`.
-2. Add a `remotes` entry to `server.json` for a hosted deployment, with a header requirement for an API key. Validate it.
-3. Build an **MCPB** bundle: `npx @anthropic-ai/mcpb init` then `mcpb pack` (CLI v2.1.2 at time of writing). What does the manifest
-   declare about user config and secrets?
-4. Add a GitHub Actions job that, on tag, builds, publishes to PyPI with trusted publishing, then `mcp-publisher publish` via OIDC.
-5. Write the user-facing README section on what data the server sends where (PyPI, OSV). This is your privacy and consent disclosure.
+Work in your copy, `workspace/08-packaging-and-distribution/` (create it with `make start 08`); never edit `code/`.
+Discussion answers go in `workspace/08-packaging-and-distribution/NOTES.md` under the matching `## Exercise N` heading.
+Check your work with `make check 08`; `make progress` updates `PROGRESS.md`.
+Reference answers are in [`solutions/`](solutions/) (spoilers).
+
+1. Publish your copy (renamed, e.g. `depintel-mcp-yourname`) to **TestPyPI** and run
+   `uvx --index-url https://test.pypi.org/simple/ depintel-mcp-yourname`. Record the URL and what happened in NOTES.md.
+2. Add a `remotes` entry to your `depintel-mcp/server.json` for a hosted deployment, with a required, secret API-key header.
+   Validate it with `mcp-publisher validate`.
+3. Build an **MCPB** bundle in your workspace: `npx @anthropic-ai/mcpb init` then `mcpb pack` (CLI v2.1.2 at time of writing).
+   What does the manifest declare about user config and secrets? (NOTES.md)
+4. Write a GitHub Actions workflow (`release.yml` in your workspace) that, on tag, builds, publishes to PyPI with trusted
+   publishing, then runs `mcp-publisher publish` via OIDC.
+5. Add a section to your `depintel-mcp/README.md` (a `## Privacy …` heading) on what data the server sends where (PyPI, OSV).
+   This is your privacy and consent disclosure.
 
 ## Further reading
 - [Registry quickstart](https://modelcontextprotocol.io/registry/quickstart), [registry repo docs](https://github.com/modelcontextprotocol/registry) (package types, official requirements, CLI commands)

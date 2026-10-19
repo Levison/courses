@@ -32,7 +32,8 @@ Two honest caveats:
 ## Tutorial
 
 ```bash
-cd modules/07-security-hardening/code
+make start 07                          # copies code/ to workspace/07-security-hardening/ (your copy)
+cd workspace/07-security-hardening
 uv run pytest -q
 uv run python audit_catalog.py stdio -- uv run python poisoned_server.py          # exit 1, 9 findings
 uv run python audit_catalog.py stdio --pin pins.json -- uv run python hardened_server.py   # pins, then re-run to verify
@@ -68,14 +69,23 @@ Code tour of `hardened_server.py`:
 
 ## Exercises
 
-1. Add a `--sandbox` launch recipe: run `hardened_server.py` with `docker run --rm -i --network none --read-only -v $PWD/docs:/app/docs:ro …`
-   and connect over stdio. Which tool stops working, and why is that the point?
-2. Extend `audit_catalog.py` to scan **resource and prompt** text and **tool results** of a sample call. Poisoning is not only in descriptions.
-3. Add an `x-mcp-header`-based tenant id and a gateway rule that rate-limits by tenant without parsing bodies.
+Work in your copy, `workspace/07-security-hardening/` (create it with `make start 07`); never edit `code/`.
+Discussion answers go in `workspace/07-security-hardening/NOTES.md` under the matching `## Exercise N` heading.
+Check your work with `make check 07`; `make progress` updates `PROGRESS.md`.
+Reference answers are in [`solutions/`](solutions/) (spoilers).
+
+1. Write `sandbox.sh` in your workspace: a launch recipe that runs `hardened_server.py` with
+   `docker run --rm -i --network none --read-only -v $PWD/docs:/app/docs:ro …` and connect to it over stdio. Which tool stops
+   working, and why is that the point? (NOTES.md)
+2. Extend your `audit_catalog.py` with `async def audit_content(client) -> list[Finding]` that scans **resource and prompt**
+   text (and, optionally, **tool results** of a sample call). Use the resource URI or prompt name as `Finding.tool`.
+   Poisoning is not only in descriptions.
+3. Add an `x-mcp-header`-based tenant id: a `tenant` argument on `list_docs` with `x-mcp-header: Tenant`, and make the rate
+   limiter budget per tenant. Then write the gateway rule that rate-limits by tenant without parsing bodies (NOTES.md).
 4. Red-team: write a page that tries to make the model call a write tool from another server. With `fence()` in place, test against
-   two different models in a real host. Record the results; they will differ, which is the lesson.
+   two different models in a real host. Record the results in NOTES.md; they will differ, which is the lesson.
 5. Design: your org wants an "MCP gateway" in front of all third-party servers. List what it can enforce (pinning, allowlists,
-   rate limits, DLP on outputs, audit) and what it cannot (model behavior inside the host).
+   rate limits, DLP on outputs, audit) and what it cannot (model behavior inside the host). (NOTES.md)
 
 ## Further reading
 - [MCP Security Best Practices (2026-07-28)](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices)

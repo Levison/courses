@@ -1,0 +1,58 @@
+{
+  "manifest_version": "0.4",
+  "name": "depintel-mcp",
+  "display_name": "Dependency Intel",
+  "version": "0.8.0",
+  "description": "PyPI package metadata and OSV vulnerability lookups for Python dependencies.",
+  "author": {
+    "name": "Your Name"
+  },
+  "license": "MIT",
+  "server": {
+    "type": "uv",
+    "entry_point": "src/depintel_mcp/server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "${__dirname}",
+        "depintel-mcp"
+      ],
+      "env": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "package_info",
+      "description": "PyPI metadata for a package"
+    },
+    {
+      "name": "check_vulnerabilities",
+      "description": "OSV vulnerabilities for an exact version"
+    },
+    {
+      "name": "audit_requirements",
+      "description": "Audit pinned requirements against OSV"
+    }
+  ],
+  "keywords": [
+    "pypi",
+    "osv",
+    "security",
+    "dependencies"
+  ],
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "python": ">=3.10"
+    }
+  },
+  "privacy_policies": [
+    "https://github.com/your-github-user/depintel-mcp#privacy"
+  ]
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "intent": "What's the latest version of httpx?",
+    "expected_tool": "package_info"
+  },
+  {
+    "intent": "Which license does requests use?",
+    "expected_tool": "package_info"
+  },
+  {
+    "intent": "Does pydantic support Python 3.9?",
+    "expected_tool": "package_info"
+  },
+  {
+    "intent": "Give me a summary of the fastapi package",
+    "expected_tool": "package_info"
+  },
+  {
+    "intent": "How many releases has numpy had?",
+    "expected_tool": "package_info"
+  },
+  {
+    "intent": "Where is the homepage for the rich library?",
+    "expected_tool": "package_info"
+  },
+  {
+    "intent": "Is jinja2 2.4.1 vulnerable?",
+    "expected_tool": "check_vulnerabilities"
+  },
+  {
+    "intent": "Any CVEs for django 3.2.0?",
+    "expected_tool": "check_vulnerabilities"
+  },
+  {
+    "intent": "Is it safe to stay on urllib3 1.26.5?",
+    "expected_tool": "check_vulnerabilities"
+  },
+  {
+    "intent": "What's the fixed version for the pyyaml 5.3 vulnerability?",
+    "expected_tool": "check_vulnerabilities"
+  },
+  {
+    "intent": "List known security issues in pillow 8.0.0",
+    "expected_tool": "check_vulnerabilities"
+  },
+  {
+    "intent": "Should I worry about cryptography 3.3 from a security standpoint?",
+    "expected_tool": "check_vulnerabilities"
+  },
+  {
+    "intent": "Audit this requirements file: flask==2.0.0\nrequests==2.25.0",
+    "expected_tool": "audit_requirements"
+  },
+  {
+    "intent": "Here's my requirements.txt, anything vulnerable? django==2.2\ncelery==4.4.0\nredis==3.5.0",
+    "expected_tool": "audit_requirements"
+  },
+  {
+    "intent": "Check all of these pins for vulnerabilities: numpy==1.21.0, lxml==4.6.2",
+    "expected_tool": "audit_requirements"
+  },
+  {
+    "intent": "Scan our lockfile for known vulns (attached below)",
+    "expected_tool": "audit_requirements"
+  },
+  {
+    "intent": "Which of my 30 dependencies need security upgrades?",
+    "expected_tool": "audit_requirements"
+  },
+  {
+    "intent": "Run a security audit over requirements-dev.txt",
+    "expected_tool": "audit_requirements"
+  },
+  {
+    "intent": "What's the weather in Boston?",
+    "expected_tool": "none"
+  },
+  {
+    "intent": "Write a Python function that reverses a string",
+    "expected_tool": "none"
+  },
+  {
+    "intent": "Explain what PEP 508 is",
+    "expected_tool": "none"
+  },
+  {
+    "intent": "Is left-pad vulnerable on npm?",
+    "expected_tool": "none"
+  }
+]

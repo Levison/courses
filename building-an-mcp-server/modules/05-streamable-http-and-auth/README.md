@@ -43,7 +43,8 @@ Protected Resource Metadata, enforce scopes per tool (including step-up 403s rou
 ## Tutorial
 
 ```bash
-cd modules/05-streamable-http-and-auth/code
+make start 05                          # copies code/ to workspace/05-streamable-http-and-auth/ (your copy)
+cd workspace/05-streamable-http-and-auth
 uv run uvicorn notes_http_server:app --port 8765      # terminal 1
 uv run python http_walkthrough.py                     # terminal 2
 uv run pytest -q                                      # spawns its own server on a free port
@@ -75,13 +76,22 @@ interactive flow, or reuse tokens from the web inspector with `--use-stored-auth
 
 ## Exercises
 
-1. Point the verifier at a real IdP (Auth0, Entra, Keycloak or Okta free tier) using `PyJWKClient`. Make the PRM advertise it.
-   Connect from Claude Code with `claude mcp add --transport http notes <url>` and watch the discovery dance.
-2. Add `notes:admin` and a `purge_notes` tool. Require step-up via `TOOL_SCOPES` and add `destructiveHint=True`.
-3. Implement token **introspection** (RFC 7662) instead of local JWT verification. What do you gain (revocation) and lose (latency)?
-4. Your notes tool must call a downstream API on the user's behalf. Sketch an RFC 8693 token-exchange flow and explain why
-   forwarding the inbound token is forbidden.
-5. Run `uvicorn --workers 4` and confirm a 2026 client works with no stickiness, then confirm `mode="legacy"` clients break without it.
+Work in your copy, `workspace/05-streamable-http-and-auth/` (create it with `make start 05`); never edit `code/`.
+Discussion answers go in `workspace/05-streamable-http-and-auth/NOTES.md` under the matching `## Exercise N` heading.
+Check your work with `make check 05`; `make progress` updates `PROGRESS.md`.
+Reference answers are in [`solutions/`](solutions/) (spoilers).
+
+1. Point the verifier at a real IdP (Auth0, Entra, Keycloak or Okta free tier) using `PyJWKClient`, and make the PRM advertise it.
+   Connect from Claude Code with `claude mcp add --transport http notes <url>` and watch the discovery dance. Record the
+   IdP, your PRM JSON (`authorization_servers`) and what you saw in NOTES.md.
+2. In your `notes_http_server.py`, add a `notes:admin` scope and a `purge_notes` tool. Require step-up via `TOOL_SCOPES`
+   (403 for modern clients), keep an in-tool check for legacy clients, and add `destructiveHint=True`.
+3. Implement token **introspection** (RFC 7662) as an `IntrospectionVerifier(introspection_url, client_id, client_secret,
+   audience, transport=None)` class in your `notes_http_server.py`. What do you gain (revocation) and lose (latency)? (NOTES.md)
+4. Your notes tool must call a downstream API on the user's behalf. Sketch an RFC 8693 token-exchange flow in NOTES.md
+   and explain why forwarding the inbound token is forbidden.
+5. Run `uvicorn --workers 4` and confirm a 2026 client works with no stickiness, then confirm `mode="legacy"` clients
+   break without it. Record what you saw in NOTES.md.
 
 ## Further reading
 - Spec: [Transports](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports), [Authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization), [Authorization security considerations](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/security-considerations)

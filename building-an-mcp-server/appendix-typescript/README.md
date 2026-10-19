@@ -18,13 +18,16 @@
 
 ## Run it
 
+The reference project is in [`code/`](code/). To experiment, work on your own copy:
+
 ```bash
-cd appendix-typescript
-npm install && npx tsc
+make start typescript                                # copies code/ (minus node_modules, dist) to workspace/appendix-typescript/
+cd workspace/appendix-typescript
+npm ci && npx tsc
 node dist/server.js                                  # stdio
 PORT=8770 node dist/http.js                          # http://127.0.0.1:8770/mcp
 npx @modelcontextprotocol/inspector --cli node dist/server.js --protocol-era modern --method tools/list --strict
-cd .. && uv run pytest appendix-typescript -q        # Python client ↔ TS server, stdio + HTTP, both eras
+cd ../.. && make test                                # includes appendix-typescript/code/test_interop.py (reference build)
 ```
 
 ## A lesson found while verifying
@@ -32,5 +35,18 @@ cd .. && uv run pytest appendix-typescript -q        # Python client ↔ TS serv
 The first version declared `top_words: z.array(z.tuple([z.string(), z.number()]))`. It compiled and worked with the Python
 client, but **`inspector --strict` exited 6**: zod emits `items: false` for tuples, a bare boolean schema that some
 shipping clients refuse. The fix is an array of objects (`{word, count}`). Run `--strict` in CI.
+
+## Exercises
+
+Work in your copy, `workspace/appendix-typescript/` (create it with `make start typescript`, then `npm ci` there); never edit `code/`.
+Discussion answers go in `workspace/appendix-typescript/NOTES.md`. Check with `make check typescript` (it runs `tsc` in your copy).
+Reference answers are in [`solutions/`](solutions/) (spoilers).
+
+1. Add a `count_tokens_estimate` tool to your `src/textkit.ts` (about 4 characters per token, minimum 1) with
+   `readOnlyHint: true` and an `outputSchema` of `{ tokens: integer }`. The check builds your copy and calls it from the Python client.
+2. Why did `z.tuple` fail `inspector --strict` (what did zod emit for `items`)? Which other zod constructs would you check
+   before shipping a schema? (NOTES.md)
+
+## Verification
 
 **Verified 2026-10-19:** `tsc` clean; `pytest appendix-typescript` 3/3 on Node 22.23 and Node 20.19; Inspector `--strict` exit 0.
